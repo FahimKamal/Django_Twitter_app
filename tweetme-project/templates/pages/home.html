@@ -5,11 +5,17 @@
 {% endblock %}
 
 {% block content %}
-  Welcome to Tweetme
+  <div class="row text-center">
+    <div class="col">
+      <h1>Welcome to Tweetme</h1>
+    </div>
+  </div>
 
-  <div id="tweets">
+
+  <div class="row" id="tweets">
     Replace me
   </div>
+
   <script>
     const tweetsElement = document.getElementById('tweets')
     tweetsElement.innerHTML = 'Loading...'
@@ -23,16 +29,19 @@
     }
 
     function LikeBtn(tweet){
-      return "<button class='btn btn-primary btn-small' onclick=handleDidLike(" + tweet.id+","+ tweet.likes+ ")>" + tweet.likes +" Like</button>"
+      return "<button class='btn btn-primary btn-small' onclick=handleDidLike(" + tweet.id+","+ tweet.likes+ ")>" + tweet.likes +" Likes</button>"
     }
 
     function formatTweetElement(tweet){
-      var formattedTweet = "<div class='md-4 tweet' id='tweet-"+ tweet.id +"'><p>" + tweet.content +"</p><div class='btn-group'>" + LikeBtn(tweet) + "</div></div>"
+      var formattedTweet = "<div class='col-12 col-md-10 mx-auto border rounded py-3 mb-4 tweet' id='tweet-"+ tweet.id +"'>" +
+        "<p>" + tweet.content +"</p>"+
+        "<div class='btn-group'>" + LikeBtn(tweet) + "</div>"+
+      "</div>"
       return formattedTweet
     }
 
     xhr.responseType = responseType
-    xhr.open(method, url)
+    xhr.open(method, url )
     xhr.onload = function () {
       const serverResponse = xhr.response
       var listedItems = serverResponse.response

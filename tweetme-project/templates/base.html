@@ -7,13 +7,21 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-
+    <style media="screen">
+    .bg-tweetme {
+      background-color: #bd2130!important;
+    }
+    </style>
     <title>{% block title %}{% endblock %}</title>
   </head>
   <body>
-    {% block content %}
+    {% include "components/navbar.html" %}
+    <div class="container">
+      {% block content %}
 
-    {% endblock %}
+      {% endblock %}
+    </div>
+
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
