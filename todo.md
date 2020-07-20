@@ -5,6 +5,7 @@
             -> Media Storage Server
     -> Delete
     -> Retweeting
+    -> Liking 
 
 2. Users
     -> Register
