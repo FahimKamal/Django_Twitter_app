@@ -1,3 +1,20 @@
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
 const tweetContainerElement = document.getElementById('tweets')
 
 function loadTweets(tweetsElement) {
@@ -31,8 +48,45 @@ function loadTweets(tweetsElement) {
 
 loadTweets(tweetContainerElement)
 
-function handleDidLike (tweet_id, currentCount){
-  console.log(tweet_id, currentCount);
+function handleTweetActionBtn (tweet_id, currentCount, action){
+  // console.log(tweet_id, currentCount);
+  const url = "api/tweets/action/"
+  const method = "POST"
+  const data = JSON.stringify({
+    id: tweet_id,
+    action: action
+  })
+  const xhr = new XMLHttpRequest()
+
+  const csrftoken = getCookie('csrftoken');
+  xhr.open(method, url)
+  xhr.setRequestHeader('Content-Type', 'application/json')
+  xhr.setRequestHeader("HTTP_X_REQUESTED_WITH", "XMLHttpRequest")
+  xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest")
+  xhr.setRequestHeader("X-CSRFToken", csrftoken)
+
+  xhr.onload = function (){
+    loadTweets(tweetContainerElement)
+  }
+  xhr.send(data)
+}
+
+function ReTweetBtn(tweet){
+  /*
+  This function will return the like button
+  with number of likes in the button.
+  */
+  return "<button class='btn btn-outline-success btn-small' onclick=handleTweetActionBtn("
+  + tweet.id+","+ tweet.likes+ ",'retweet')>Retweet</button>"
+}
+
+function UnLikeBtn(tweet){
+  /*
+  This function will return the like button
+  with number of likes in the button.
+  */
+  return "<button class='btn btn-outline-primary btn-small' onclick=handleTweetActionBtn("
+  + tweet.id+","+ tweet.likes+ ",'unlike')>Unlike</button>"
 }
 
 function LikeBtn(tweet){
@@ -40,7 +94,8 @@ function LikeBtn(tweet){
   This function will return the like button
   with number of likes in the button.
   */
-  return "<button class='btn btn-primary btn-small' onclick=handleDidLike(" + tweet.id+","+ tweet.likes+ ")>" + tweet.likes +" Likes</button>"
+  return "<button class='btn btn-primary btn-small' onclick=handleTweetActionBtn("
+  + tweet.id+","+ tweet.likes+ ",'like')>" + tweet.likes +" Likes</button>"
 }
 
 function formatTweetElement(tweet){
@@ -50,7 +105,11 @@ function formatTweetElement(tweet){
   var formattedTweet =""+
   "<div class='col-12 col-md-10 mx-auto border rounded py-3 mb-4 tweet' id='tweet-"+ tweet.id +"'>" +
     "<p>" + tweet.content +"</p>"+
-    "<div class='btn-group'>" + LikeBtn(tweet) + "</div>"+
+    "<div class='btn-group'>"
+    + LikeBtn(tweet)
+    + UnLikeBtn(tweet)
+    + ReTweetBtn(tweet)
+    + "</div>"+
   "</div>"
   return formattedTweet
 }

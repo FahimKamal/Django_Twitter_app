@@ -5,6 +5,8 @@
             -> Media Storage Server
     -> Delete
     -> Retweeting
+        -> Read only Serializer
+        -> Create only serializer
     -> Liking or Unliking
 
 2. Users

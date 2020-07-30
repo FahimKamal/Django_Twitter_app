@@ -13,6 +13,7 @@ class TweetLike(models.Model):
 
 # Create your models here.
 class Tweet(models.Model):
+    parent = models.ForeignKey('self', null=True, on_delete=models.SET_NULL)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     likes = models.ManyToManyField(User,
                                    related_name='tweet_user',
@@ -27,6 +28,10 @@ class Tweet(models.Model):
 
     class Meta():
         ordering = ['-id']
+
+    @property
+    def is_retweet(self):
+        return self.parent != None
 
     def serialize(self):
         return {

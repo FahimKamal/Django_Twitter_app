@@ -9,7 +9,11 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import Tweet
 from . import forms
-from .serializers import TweetSerializer, TweetActionSerializer
+from .serializers import (
+    TweetSerializer,
+    TweetActionSerializer,
+    TweetCreateSerializer,
+)
 
 
 # Create your views here.
@@ -43,24 +47,31 @@ def tweet_action_view(request, *args, **kwargs):
     id is required.
     Action options are: like, unlike, retweet
     """
-    serializer = TweetActionSerializer(request.POST)
+    serializer = TweetActionSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         data = serializer.validated_data
         tweet_id = data.get("id")
         action = data.get("action")
+        content = data.get("content")
         qs = Tweet.objects.filter(id=tweet_id)
         if not qs.exists():
             return Response({}, status=404)
         obj = qs.first()
         if action == 'like':
             obj.likes.add(request.user)
+            serializer = TweetSerializer(obj)
+            return Response(serializer.data, status=200)
         elif action == "unlike":
             obj.likes.remove(request.user)
         elif action == "retweet":
-            # This is todo
-            pass
+            new_tweet = Tweet.objects.create(
+                user=request.user,
+                parent=obj,
+                content=content)
+            serializer = TweetSerializer(new_tweet)
+            return Response(serializer.data, status=200)
 
-    return Response({'message': 'Tweet removed.'}, status=200)
+    return Response({}, status=200)
 
 
 @api_view(['DELETE', 'POST'])
@@ -80,7 +91,7 @@ def tweet_delete_view(request, tweet_id, *args, **kwargs):
 @api_view(['POST'])  # http method the client == POST
 @permission_classes([IsAuthenticated])
 def tweet_create_view(request):
-    serializer = TweetSerializer(data=request.POST)
+    serializer = TweetCreateSerializer(data=request.POST)
     if serializer.is_valid(raise_exception=True):
         serializer.save(user=request.user)
         return Response(serializer.data, status=201)
